@@ -1,0 +1,1 @@
+CREATE INDEX "idx_movies_year_overall_top" ON "movies" USING btree ("year","overall_score" DESC NULLS LAST) WHERE "movies"."year" is not null and "movies"."overall_score" is not null and "movies"."coverage" >= 0.70 and "movies"."score_version" = 2;

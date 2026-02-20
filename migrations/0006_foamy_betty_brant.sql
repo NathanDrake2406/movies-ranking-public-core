@@ -1,0 +1,1 @@
+ALTER TABLE "ceremony_results" ADD COLUMN "person_photo" text;

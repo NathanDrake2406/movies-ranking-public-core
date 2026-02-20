@@ -1,0 +1,923 @@
+{
+  "id": "92f9c8d4-f144-4b92-a083-3d4b8837c157",
+  "prevId": "3a1f6d36-17f2-461b-ba8d-5607cf155dae",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.award_probabilities": {
+      "name": "award_probabilities",
+      "schema": "",
+      "columns": {
+        "source": {
+          "name": "source",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'kalshi'"
+        },
+        "award_slug": {
+          "name": "award_slug",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "season_year": {
+          "name": "season_year",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "category_slug": {
+          "name": "category_slug",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "category_label": {
+          "name": "category_label",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nominee_slug": {
+          "name": "nominee_slug",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nominee_label": {
+          "name": "nominee_label",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "imdb_id": {
+          "name": "imdb_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "probability_raw": {
+          "name": "probability_raw",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "probability_norm": {
+          "name": "probability_norm",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "market_id": {
+          "name": "market_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "market_url": {
+          "name": "market_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "closes_at": {
+          "name": "closes_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "last_ingested_at": {
+          "name": "last_ingested_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "ux_award_probabilities_source_market_nominee": {
+          "name": "ux_award_probabilities_source_market_nominee",
+          "columns": [
+            {
+              "expression": "source",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "market_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "nominee_slug",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_award_probabilities_award_season_category_prob": {
+          "name": "idx_award_probabilities_award_season_category_prob",
+          "columns": [
+            {
+              "expression": "award_slug",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "season_year",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "category_slug",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "probability_norm",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_award_probabilities_award_season_active": {
+          "name": "idx_award_probabilities_award_season_active",
+          "columns": [
+            {
+              "expression": "award_slug",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "season_year",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "is_active",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "award_probabilities_imdb_id_movies_imdb_id_fk": {
+          "name": "award_probabilities_imdb_id_movies_imdb_id_fk",
+          "tableFrom": "award_probabilities",
+          "tableTo": "movies",
+          "columnsFrom": [
+            "imdb_id"
+          ],
+          "columnsTo": [
+            "imdb_id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "award_probabilities_source_award_slug_season_year_category_slug_nominee_slug_pk": {
+          "name": "award_probabilities_source_award_slug_season_year_category_slug_nominee_slug_pk",
+          "columns": [
+            "source",
+            "award_slug",
+            "season_year",
+            "category_slug",
+            "nominee_slug"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "chk_award_probabilities_probability_raw_range": {
+          "name": "chk_award_probabilities_probability_raw_range",
+          "value": "\"award_probabilities\".\"probability_raw\" >= 0 and \"award_probabilities\".\"probability_raw\" <= 1"
+        },
+        "chk_award_probabilities_probability_norm_range": {
+          "name": "chk_award_probabilities_probability_norm_range",
+          "value": "\"award_probabilities\".\"probability_norm\" >= 0 and \"award_probabilities\".\"probability_norm\" <= 1"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.ceremony_results": {
+      "name": "ceremony_results",
+      "schema": "",
+      "columns": {
+        "ceremony_slug": {
+          "name": "ceremony_slug",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "season_year": {
+          "name": "season_year",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "category_slug": {
+          "name": "category_slug",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "category_label": {
+          "name": "category_label",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nominee_slug": {
+          "name": "nominee_slug",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nominee_label": {
+          "name": "nominee_label",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "person_label": {
+          "name": "person_label",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "film_title": {
+          "name": "film_title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "film_year": {
+          "name": "film_year",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "imdb_id": {
+          "name": "imdb_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_winner": {
+          "name": "is_winner",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "person_photo": {
+          "name": "person_photo",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "wikidata_qid": {
+          "name": "wikidata_qid",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "last_ingested_at": {
+          "name": "last_ingested_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "idx_ceremony_results_season_category_winner": {
+          "name": "idx_ceremony_results_season_category_winner",
+          "columns": [
+            {
+              "expression": "season_year",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "category_slug",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "is_winner",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_ceremony_results_ceremony_season": {
+          "name": "idx_ceremony_results_ceremony_season",
+          "columns": [
+            {
+              "expression": "ceremony_slug",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "season_year",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_ceremony_results_imdb_id": {
+          "name": "idx_ceremony_results_imdb_id",
+          "columns": [
+            {
+              "expression": "imdb_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "ceremony_results_ceremony_slug_season_year_category_slug_nominee_slug_pk": {
+          "name": "ceremony_results_ceremony_slug_season_year_category_slug_nominee_slug_pk",
+          "columns": [
+            "ceremony_slug",
+            "season_year",
+            "category_slug",
+            "nominee_slug"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.movies": {
+      "name": "movies",
+      "schema": "",
+      "columns": {
+        "imdb_id": {
+          "name": "imdb_id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "tmdb_id": {
+          "name": "tmdb_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "year": {
+          "name": "year",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "poster": {
+          "name": "poster",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "overview": {
+          "name": "overview",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "runtime": {
+          "name": "runtime",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "rating": {
+          "name": "rating",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "genres": {
+          "name": "genres",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "director": {
+          "name": "director",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "directors": {
+          "name": "directors",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "director_photos": {
+          "name": "director_photos",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "writers": {
+          "name": "writers",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cinematographer": {
+          "name": "cinematographer",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "editor": {
+          "name": "editor",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "composer": {
+          "name": "composer",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cast_members": {
+          "name": "cast_members",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "watch_provider_ids": {
+          "name": "watch_provider_ids",
+          "type": "integer[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "moods": {
+          "name": "moods",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "themes": {
+          "name": "themes",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "consensus": {
+          "name": "consensus",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "imdb_summary": {
+          "name": "imdb_summary",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "overall_score": {
+          "name": "overall_score",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "score_balanced": {
+          "name": "score_balanced",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "score_mainstream": {
+          "name": "score_mainstream",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "coverage": {
+          "name": "coverage",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "disagreement": {
+          "name": "disagreement",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sources_count": {
+          "name": "sources_count",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "is_complete": {
+          "name": "is_complete",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "score_version": {
+          "name": "score_version",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "last_fetched_at": {
+          "name": "last_fetched_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "idx_movies_year": {
+          "name": "idx_movies_year",
+          "columns": [
+            {
+              "expression": "year",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_movies_genres_gin": {
+          "name": "idx_movies_genres_gin",
+          "columns": [
+            {
+              "expression": "genres",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "gin",
+          "with": {}
+        },
+        "idx_movies_moods_gin": {
+          "name": "idx_movies_moods_gin",
+          "columns": [
+            {
+              "expression": "moods",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "gin",
+          "with": {}
+        },
+        "idx_movies_watch_providers_gin": {
+          "name": "idx_movies_watch_providers_gin",
+          "columns": [
+            {
+              "expression": "watch_provider_ids",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "gin",
+          "with": {}
+        },
+        "idx_movies_directors_coalesce_gin": {
+          "name": "idx_movies_directors_coalesce_gin",
+          "columns": [
+            {
+              "expression": "COALESCE(\"directors\", ARRAY[\"director\"])",
+              "asc": true,
+              "isExpression": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "gin",
+          "with": {}
+        },
+        "idx_movies_last_fetched": {
+          "name": "idx_movies_last_fetched",
+          "columns": [
+            {
+              "expression": "last_fetched_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_movies_score_version": {
+          "name": "idx_movies_score_version",
+          "columns": [
+            {
+              "expression": "score_version",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_movies_tmdb_id": {
+          "name": "idx_movies_tmdb_id",
+          "columns": [
+            {
+              "expression": "tmdb_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "where": "\"movies\".\"tmdb_id\" is not null",
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_movies_top": {
+          "name": "idx_movies_top",
+          "columns": [
+            {
+              "expression": "overall_score",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "where": "\"movies\".\"overall_score\" is not null and \"movies\".\"coverage\" >= 0.70 and \"movies\".\"score_version\" = 2",
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_movies_divisive": {
+          "name": "idx_movies_divisive",
+          "columns": [
+            {
+              "expression": "disagreement",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "where": "\"movies\".\"overall_score\" is not null and \"movies\".\"coverage\" >= 0.70 and \"movies\".\"score_version\" = 2",
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_movies_top_balanced": {
+          "name": "idx_movies_top_balanced",
+          "columns": [
+            {
+              "expression": "score_balanced",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "where": "\"movies\".\"score_balanced\" is not null and \"movies\".\"coverage\" >= 0.70 and \"movies\".\"score_version\" = 2",
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_movies_top_mainstream": {
+          "name": "idx_movies_top_mainstream",
+          "columns": [
+            {
+              "expression": "score_mainstream",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "where": "\"movies\".\"score_mainstream\" is not null and \"movies\".\"coverage\" >= 0.70 and \"movies\".\"score_version\" = 2",
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.scores": {
+      "name": "scores",
+      "schema": "",
+      "columns": {
+        "imdb_id": {
+          "name": "imdb_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "source": {
+          "name": "source",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "label": {
+          "name": "label",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "normalized": {
+          "name": "normalized",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "raw_value": {
+          "name": "raw_value",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "raw_scale": {
+          "name": "raw_scale",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "count": {
+          "name": "count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "url": {
+          "name": "url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "error": {
+          "name": "error",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "from_fallback": {
+          "name": "from_fallback",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "scores_imdb_id_movies_imdb_id_fk": {
+          "name": "scores_imdb_id_movies_imdb_id_fk",
+          "tableFrom": "scores",
+          "tableTo": "movies",
+          "columnsFrom": [
+            "imdb_id"
+          ],
+          "columnsTo": [
+            "imdb_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "scores_imdb_id_source_pk": {
+          "name": "scores_imdb_id_source_pk",
+          "columns": [
+            "imdb_id",
+            "source"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "source_check": {
+          "name": "source_check",
+          "value": "\"scores\".\"source\" in ('allocine_press','allocine_user','douban','imdb','letterboxd','metacritic','rotten_tomatoes','rotten_tomatoes_all','rotten_tomatoes_audience','rotten_tomatoes_top')"
+        }
+      },
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}
