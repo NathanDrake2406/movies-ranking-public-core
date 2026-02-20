@@ -20,12 +20,12 @@ The full private app includes scraping/orchestration/admin operations. This publ
 
 ```mermaid
 flowchart LR
-  A["Raw source scores"] --> B["Normalization\n`normalizeScore()`"]
-  B --> C["Tiered scoring\n`computeOverallScore()`"]
+  A["Raw source scores"] --> B["Normalization\nnormalizeScore()"]
+  B --> C["Tiered scoring\ncomputeOverallScore()"]
   C --> D["Score payload"]
-  D --> E["KV cache\n`kvSet` / `kvGet`"]
-  D --> F["DB transaction\n`persistScores()`"]
-  F --> G["`movies` + `scores` tables"]
+  D --> E["KV cache\nkvSet / kvGet"]
+  D --> F["DB transaction\npersistScores()"]
+  F --> G["movies + scores tables"]
 ```
 
 ## Core modules
