@@ -1,6 +1,5 @@
 # Movies Ranking Public Core
 
-A curated, low-risk subset of a production movie-ranking system.
 
 Live site: [moviesranking.com](https://moviesranking.com)
 
